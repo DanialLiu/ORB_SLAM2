@@ -28,7 +28,7 @@
 
 #include <unistd.h>
 #include<System.h>
-
+#include "Map.h"
 using namespace std;
 
 void LoadImages(const string &strFile, vector<string> &vstrImageFilenames,
@@ -36,6 +36,12 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames,
 
 int main(int argc, char **argv)
 {
+    const char* mapfile = NULL;
+    if(argc == 5)
+    {
+        mapfile = argv[4];
+        argc = 4;
+    }
     if(argc != 4)
     {
         cerr << endl << "Usage: ./mono_tum path_to_vocabulary path_to_settings path_to_sequence" << endl;
@@ -49,9 +55,8 @@ int main(int argc, char **argv)
     LoadImages(strFile, vstrImageFilenames, vTimestamps);
 
     int nImages = vstrImageFilenames.size();
-
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,true);
+    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR, false, mapfile);
 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
@@ -83,8 +88,14 @@ int main(int argc, char **argv)
 #endif
 
         // Pass the image to the SLAM system
-        SLAM.TrackMonocular(im,tframe);
-
+        cv::Mat mat = SLAM.TrackMonocular(im,tframe);
+        cout << "position rows:" << mat.rows　<< " cols:" << mat.cols << endl;
+        for(int i=0; i<mat.rows; i++) {
+            for(int j=0; j<mat.cols; j++) {
+                cout << mat.at<float>(i,j) << " ";
+            }
+        }
+        cout << endl;
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
 #else
@@ -122,7 +133,7 @@ int main(int argc, char **argv)
 
     // Save camera trajectory
     SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
-    SLAM.SaveMap("map.txt");
+    
     return 0;
 }
 
