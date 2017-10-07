@@ -194,7 +194,7 @@ public:
     // (called in the constructor).
     void UndistortKeyPoints();
 	void InitializeScaleLevels();
-	static void InitializeClass();
+	//static void InitializeClass();
     void ComputeImageBounds(const cv::Mat &imLeft);
 
     // Assign keypoints to the grid for speed up feature matching (called in the constructor).

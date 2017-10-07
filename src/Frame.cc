@@ -41,16 +41,16 @@ inline void Frame::InitializeScaleLevels() {
   mvLevelSigma2 = mpORBextractorLeft->GetScaleSigmaSquares();
   mvInvLevelSigma2 = mpORBextractorLeft->GetInverseScaleSigmaSquares();
 }
-void Frame::InitializeClass() {
-  if(Frame::mbInitialComputations)
-    {
-	  cerr << "in Frame::InitializeClass" << endl;
-	  ComputeImageBounds();
-	  Frame::mfGridElementWidthInv=static_cast<float>(FRAME_GRID_COLS)/(Frame::mnMaxX-Frame::mnMinX);
-	  Frame::mfGridElementHeightInv=static_cast<float>(FRAME_GRID_ROWS)/(Frame::mnMaxY-Frame::mnMinY);
-	  Frame::mbInitialComputations=false;
-    }
-}
+// void Frame::InitializeClass() {
+//   if(Frame::mbInitialComputations)
+//     {
+// 	  cerr << "in Frame::InitializeClass" << endl;
+// 	  ComputeImageBounds();
+// 	  Frame::mfGridElementWidthInv=static_cast<float>(FRAME_GRID_COLS)/(Frame::mnMaxX-Frame::mnMinX);
+// 	  Frame::mfGridElementHeightInv=static_cast<float>(FRAME_GRID_ROWS)/(Frame::mnMaxY-Frame::mnMinY);
+// 	  Frame::mbInitialComputations=false;
+//     }
+// }
 Frame::Frame()
 {}
 
