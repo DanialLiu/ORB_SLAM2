@@ -79,8 +79,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     //Create the Map
     if (mapfile!=NULL) 
     {
-        mpMap->Load(mapfile, mpVocabulary);
-        for(auto kf: map->GetAllKeyFrames())
+        mpMap->Load(mapfile, *mpVocabulary);
+        for(auto kf: mpMap->GetAllKeyFrames())
             mpKeyFrameDatabase->add(kf);
 	}
     //mpMap = new Map();

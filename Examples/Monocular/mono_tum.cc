@@ -89,8 +89,7 @@ int main(int argc, char **argv)
 
         // Pass the image to the SLAM system
         cv::Mat mat = SLAM.TrackMonocular(im,tframe);
-        cout << "position rows:" << mat.rows　<< " cols:" << mat.cols << endl;
-        for(int i=0; i<mat.rows; i++) {
+        cout << "position rows:" << mat.rows << " cols:" << mat.cols << endl; for(int i=0; i<mat.rows; i++) {
             for(int j=0; j<mat.cols; j++) {
                 cout << mat.at<float>(i,j) << " ";
             }
