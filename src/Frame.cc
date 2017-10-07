@@ -32,7 +32,7 @@ float Frame::cx, Frame::cy, Frame::fx, Frame::fy, Frame::invfx, Frame::invfy;
 float Frame::mnMinX, Frame::mnMinY, Frame::mnMaxX, Frame::mnMaxY;
 float Frame::mfGridElementWidthInv, Frame::mfGridElementHeightInv;
 
-inline void Frame::InitializeScaleLevels() {
+void Frame::InitializeScaleLevels() {
   mnScaleLevels = mpORBextractorLeft->GetLevels();
   mfScaleFactor = mpORBextractorLeft->GetScaleFactor();
   mfLogScaleFactor = log(mfScaleFactor);
