@@ -32,7 +32,7 @@ namespace ORB_SLAM2
 {
 
 System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor,
-               const bool bUseViewer, Map* map):mSensor(sensor), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false),mbActivateLocalizationMode(false),
+               const bool bUseViewer, const char* mapfile):mSensor(sensor), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false),mbActivateLocalizationMode(false),
         mbDeactivateLocalizationMode(false)
 {
     // Output welcome message
@@ -75,13 +75,13 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
     //Create KeyFrame Database
     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
-
+    mpMap = new Map();
     //Create the Map
-    if (map==NULL) mpMap = new Map();
-	else {
-	  mpMap = map;
-	  for(auto kf: map->GetAllKeyFrames())
-		mpKeyFrameDatabase->add(kf);
+    if (mapfile!=NULL) 
+    {
+        mpMap->Load(mapfile, mpVocabulary);
+        for(auto kf: map->GetAllKeyFrames())
+            mpKeyFrameDatabase->add(kf);
 	}
     //mpMap = new Map();
 
