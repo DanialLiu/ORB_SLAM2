@@ -32,6 +32,25 @@ float Frame::cx, Frame::cy, Frame::fx, Frame::fy, Frame::invfx, Frame::invfy;
 float Frame::mnMinX, Frame::mnMinY, Frame::mnMaxX, Frame::mnMaxY;
 float Frame::mfGridElementWidthInv, Frame::mfGridElementHeightInv;
 
+inline void Frame::InitializeScaleLevels() {
+  mnScaleLevels = mpORBextractorLeft->GetLevels();
+  mfScaleFactor = mpORBextractorLeft->GetScaleFactor();
+  mfLogScaleFactor = log(mfScaleFactor);
+  mvScaleFactors = mpORBextractorLeft->GetScaleFactors();
+  mvInvScaleFactors = mpORBextractorLeft->GetInverseScaleFactors();
+  mvLevelSigma2 = mpORBextractorLeft->GetScaleSigmaSquares();
+  mvInvLevelSigma2 = mpORBextractorLeft->GetInverseScaleSigmaSquares();
+}
+void Frame::InitializeClass() {
+  if(Frame::mbInitialComputations)
+    {
+	  cerr << "in Frame::InitializeClass" << endl;
+	  ComputeImageBounds();
+	  Frame::mfGridElementWidthInv=static_cast<float>(FRAME_GRID_COLS)/(Frame::mnMaxX-Frame::mnMinX);
+	  Frame::mfGridElementHeightInv=static_cast<float>(FRAME_GRID_ROWS)/(Frame::mnMaxY-Frame::mnMinY);
+	  Frame::mbInitialComputations=false;
+    }
+}
 Frame::Frame()
 {}
 

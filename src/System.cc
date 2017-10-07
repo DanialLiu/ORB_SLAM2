@@ -26,11 +26,13 @@
 #include <pangolin/pangolin.h>
 #include <iomanip>
 
+#include<unistd.h>
+
 namespace ORB_SLAM2
 {
 
 System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor,
-               const bool bUseViewer):mSensor(sensor), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false),mbActivateLocalizationMode(false),
+               const bool bUseViewer, Map* map):mSensor(sensor), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false),mbActivateLocalizationMode(false),
         mbDeactivateLocalizationMode(false)
 {
     // Output welcome message
@@ -75,7 +77,13 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
 
     //Create the Map
-    mpMap = new Map();
+    if (map==NULL) mpMap = new Map();
+	else {
+	  mpMap = map;
+	  for(auto kf: map->GetAllKeyFrames())
+		mpKeyFrameDatabase->add(kf);
+	}
+    //mpMap = new Map();
 
     //Create Drawers. These are used by the Viewer
     mpFrameDrawer = new FrameDrawer(mpMap);
@@ -318,6 +326,13 @@ void System::Shutdown()
     if(mpViewer)
         pangolin::BindToContext("ORB-SLAM2: Map Viewer");
 }
+Map* System::GetMap() {return this->mpMap;}
+
+bool System::SaveMap(const string &filename) {
+  cerr << "System Saving to " << filename << endl;
+  return mpMap->Save(filename);
+}
+
 
 void System::SaveTrajectoryTUM(const string &filename)
 {
