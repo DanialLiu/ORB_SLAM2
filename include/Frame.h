@@ -193,8 +193,8 @@ public:
     // Only for the RGB-D case. Stereo must be already rectified!
     // (called in the constructor).
     void UndistortKeyPoints();
-
-    // Computes image bounds for the undistorted image (called in the constructor).
+	void InitializeScaleLevels();
+	static void InitializeClass();
     void ComputeImageBounds(const cv::Mat &imLeft);
 
     // Assign keypoints to the grid for speed up feature matching (called in the constructor).
