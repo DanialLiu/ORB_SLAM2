@@ -24,7 +24,6 @@
 
 #include "Map.h"
 #include "Converter.h"
-#include "Camera.h"
 #include "ORBextractor.h"
 
 namespace ORB_SLAM2
@@ -217,10 +216,6 @@ MapPoint* Map::_ReadMapPoint(ifstream &f) {
 
 
 bool Map::Load(const string &filename, ORBVocabulary &voc) {
-  if (!Camera::initialized) {
-	cerr << "Map: camera is not initialized. Cowardly refusing to load anything" << endl;
-	return false;
-  }
   
   int nFeatures = 2000;
   float scaleFactor = 1.2;
