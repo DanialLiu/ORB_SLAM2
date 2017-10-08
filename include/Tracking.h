@@ -180,12 +180,12 @@ protected:
 
     //Map
     Map* mpMap;
-
+public:
     //Calibration matrix
     cv::Mat mK;
     cv::Mat mDistCoef;
     float mbf;
-
+protected:
     //New KeyFrame rules (according to fps)
     int mMinFrames;
     int mMaxFrames;

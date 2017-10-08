@@ -422,13 +422,11 @@ void Frame::ComputeBoW()
 
 void Frame::UndistortKeyPoints()
 {
-    cout << "UndistortKeyPoints 1" << endl;
-    if(mDistCoef.elemSize() == 0 || mDistCoef.at<float>(0)==0.0)
+    if(mDistCoef.at<float>(0)==0.0)//mDistCoef.elemSize() == 0 || 
     {
         mvKeysUn=mvKeys;
         return;
     }
-    cout << "UndistortKeyPoints 2" << endl;
 
     // Fill matrix with points
     cv::Mat mat(N,2,CV_32F);
@@ -437,16 +435,13 @@ void Frame::UndistortKeyPoints()
         mat.at<float>(i,0)=mvKeys[i].pt.x;
         mat.at<float>(i,1)=mvKeys[i].pt.y;
     }
-    cout << "UndistortKeyPoints 3" << endl;
     // Undistort points
     mat=mat.reshape(2);
     cv::undistortPoints(mat,mat,mK,mDistCoef,cv::Mat(),mK);
     mat=mat.reshape(1);
-    cout << "UndistortKeyPoints 4" << endl;
 
     // Fill undistorted keypoint vector
     mvKeysUn.resize(N);
-    cout << "UndistortKeyPoints resize(N)" << N << endl;
     for(int i=0; i<N; i++)
     {
         cv::KeyPoint kp = mvKeys[i];
@@ -454,7 +449,6 @@ void Frame::UndistortKeyPoints()
         kp.pt.y=mat.at<float>(i,1);
         mvKeysUn[i]=kp;
     }
-    cout << "UndistortKeyPoints 5" << endl;
 }
 
 void Frame::ComputeImageBounds(const cv::Mat &imLeft)

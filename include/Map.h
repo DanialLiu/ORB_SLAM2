@@ -59,7 +59,7 @@ public:
 
     void clear();
 	bool Save(const string &filename);
-	bool Load(const string &filename, ORBVocabulary &voc);
+	bool Load(const string &filename, ORBVocabulary &voc, cv::Mat& k, cv::Mat& DistCoef);
 
     vector<KeyFrame*> mvpKeyFrameOrigins;
 
@@ -83,7 +83,7 @@ protected:
 	void _WriteMapPoint(ofstream &f, MapPoint* mp);
 	void _WriteKeyFrame(ofstream &f, KeyFrame* kf,  map<MapPoint*, unsigned long int>& idx_of_mp);
 	MapPoint* _ReadMapPoint(ifstream &f);
-	KeyFrame* _ReadKeyFrame(ifstream &f, ORBVocabulary &voc, std::vector<MapPoint*> amp, ORBextractor* ex);
+	KeyFrame* _ReadKeyFrame(ifstream &f, ORBVocabulary &voc, std::vector<MapPoint*> amp, ORBextractor* ex, cv::Mat& k, cv::Mat& DistCoef);
 };
 
 } //namespace ORB_SLAM

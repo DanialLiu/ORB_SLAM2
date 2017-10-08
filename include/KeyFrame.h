@@ -188,12 +188,12 @@ public:
     const int mnMaxY;
     const cv::Mat mK;
 
-
+	cv::Mat Tcw;
     // The following variables need to be accessed trough a mutex to be thread safe.
 protected:
 
     // SE3 Pose and camera center
-    cv::Mat Tcw;
+    
     cv::Mat Twc;
     cv::Mat Ow;
 

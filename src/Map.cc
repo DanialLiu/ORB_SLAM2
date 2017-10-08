@@ -139,7 +139,7 @@ void Map::clear()
 //
 // TODO: frameid vs keyframeid
 //
-KeyFrame* Map::_ReadKeyFrame(ifstream &f, ORBVocabulary &voc, std::vector<MapPoint*> amp, ORBextractor* orb_ext) {
+KeyFrame* Map::_ReadKeyFrame(ifstream &f, ORBVocabulary &voc, std::vector<MapPoint*> amp, ORBextractor* orb_ext, cv::Mat& k, cv::Mat& DistCoef) {
   Frame fr;
   fr.mpORBvocabulary = &voc;
   f.read((char*)&fr.mnId, sizeof(fr.mnId));              // ID
@@ -182,10 +182,11 @@ KeyFrame* Map::_ReadKeyFrame(ifstream &f, ORBVocabulary &voc, std::vector<MapPoi
   fr.mvDepth = vector<float>(fr.N,-1);
   fr.mpORBextractorLeft = orb_ext;
   fr.InitializeScaleLevels();
+  fr.mK = k;
+  fr.mDistCoef = DistCoef;
   fr.UndistortKeyPoints();
   fr.AssignFeaturesToGrid();
   fr.ComputeBoW();
-
   KeyFrame* kf = new KeyFrame(fr, this, NULL);
   kf->mnId = fr.mnId; // bleeee why? do I store that?
   for (int i=0; i<fr.N; i++) {
@@ -194,7 +195,6 @@ KeyFrame* Map::_ReadKeyFrame(ifstream &f, ORBVocabulary &voc, std::vector<MapPoi
 	  if (!fr.mvpMapPoints[i]->GetReferenceKeyFrame()) fr.mvpMapPoints[i]->SetReferenceKeyFrame(kf);
 	}
   }
-
   return kf;
 }
 
@@ -215,7 +215,7 @@ MapPoint* Map::_ReadMapPoint(ifstream &f) {
 
 
 
-bool Map::Load(const string &filename, ORBVocabulary &voc) {
+bool Map::Load(const string &filename, ORBVocabulary &voc, cv::Mat& k, cv::Mat& DistCoef) {
   
   int nFeatures = 2000;
   float scaleFactor = 1.2;
@@ -242,7 +242,7 @@ bool Map::Load(const string &filename, ORBVocabulary &voc) {
   cerr << "reading " << nb_keyframes << " keyframe" << endl; 
   vector<KeyFrame*> kf_by_order;
   for (unsigned int i=0; i<nb_keyframes; i++) {
-	KeyFrame* kf = _ReadKeyFrame(f, voc, amp, &orb_ext); 
+	KeyFrame* kf = _ReadKeyFrame(f, voc, amp, &orb_ext, k, DistCoef); 
 	AddKeyFrame(kf);
 	kf_by_order.push_back(kf);
   }
@@ -251,7 +251,6 @@ bool Map::Load(const string &filename, ORBVocabulary &voc) {
   map<unsigned long int, KeyFrame*> kf_by_id;
   for(auto kf: mspKeyFrames)
 	kf_by_id[kf->mnId] = kf;
-
   for(auto kf: kf_by_order) {
 	unsigned long int parent_id;
 	f.read((char*)&parent_id, sizeof(parent_id));          // parent id
