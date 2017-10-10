@@ -1334,10 +1334,11 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame, 
     for(int i=0;i<HISTO_LENGTH;i++)
         rotHist[i].reserve(500);
     const float factor = 1.0f/HISTO_LENGTH;
-
+	
     const cv::Mat Rcw = CurrentFrame.mTcw.rowRange(0,3).colRange(0,3);
     const cv::Mat tcw = CurrentFrame.mTcw.rowRange(0,3).col(3);
-
+	cout << "ORBmatcher::SearchByProjection Rcw:" << Rcw << endl;
+	cout << "ORBmatcher::SearchByProjection tcw:" << tcw << endl;
     const cv::Mat twc = -Rcw.t()*tcw;
 
     const cv::Mat Rlw = LastFrame.mTcw.rowRange(0,3).colRange(0,3);
@@ -1347,7 +1348,7 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame, 
 
     const bool bForward = tlc.at<float>(2)>CurrentFrame.mb && !bMono;
     const bool bBackward = -tlc.at<float>(2)>CurrentFrame.mb && !bMono;
-
+	//cout << "ORBmatcher::SearchByProjection LastFrame.N:" << LastFrame.N << endl;
     for(int i=0; i<LastFrame.N; i++)
     {
         MapPoint* pMP = LastFrame.mvpMapPoints[i];
@@ -1358,18 +1359,19 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame, 
             {
                 // Project
                 cv::Mat x3Dw = pMP->GetWorldPos();
+				
                 cv::Mat x3Dc = Rcw*x3Dw+tcw;
-
+				//cout << "ORBmatcher::SearchByProjection x3Dc:" << x3Dc << endl;
                 const float xc = x3Dc.at<float>(0);
                 const float yc = x3Dc.at<float>(1);
                 const float invzc = 1.0/x3Dc.at<float>(2);
-
+				//cout << "ORBmatcher::SearchByProjection invzc:" << invzc << endl;
                 if(invzc<0)
                     continue;
-
+				//cout << "ORBmatcher::SearchByProjection fx:" << CurrentFrame.fx << " xc:" << xc << " cx:" << CurrentFrame.cx << "yc" << yc << endl;
                 float u = CurrentFrame.fx*xc*invzc+CurrentFrame.cx;
                 float v = CurrentFrame.fy*yc*invzc+CurrentFrame.cy;
-
+				//cout << "ORBmatcher::SearchByProjection u:" << u << " v:" << v << endl;
                 if(u<CurrentFrame.mnMinX || u>CurrentFrame.mnMaxX)
                     continue;
                 if(v<CurrentFrame.mnMinY || v>CurrentFrame.mnMaxY)
@@ -1388,7 +1390,7 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame, 
                     vIndices2 = CurrentFrame.GetFeaturesInArea(u,v, radius, 0, nLastOctave);
                 else
                     vIndices2 = CurrentFrame.GetFeaturesInArea(u,v, radius, nLastOctave-1, nLastOctave+1);
-
+				//cout << "ORBmatcher::SearchByProjection vIndices2.size():" << vIndices2.size() << endl;
                 if(vIndices2.empty())
                     continue;
 
@@ -1398,8 +1400,9 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame, 
                 int bestIdx2 = -1;
 
                 for(vector<size_t>::const_iterator vit=vIndices2.begin(), vend=vIndices2.end(); vit!=vend; vit++)
-                {
+                {					
                     const size_t i2 = *vit;
+					//cout << "ORBmatcher::SearchByProjection i2:" << i2 << endl;
                     if(CurrentFrame.mvpMapPoints[i2])
                         if(CurrentFrame.mvpMapPoints[i2]->Observations()>0)
                             continue;
@@ -1415,14 +1418,14 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame, 
                     const cv::Mat &d = CurrentFrame.mDescriptors.row(i2);
 
                     const int dist = DescriptorDistance(dMP,d);
-
+					//cout << "ORBmatcher::SearchByProjection dist:" << dist << endl;
                     if(dist<bestDist)
                     {
                         bestDist=dist;
                         bestIdx2=i2;
                     }
                 }
-
+				//cout << "ORBmatcher::SearchByProjection bestDist:" << bestDist << endl;
                 if(bestDist<=TH_HIGH)
                 {
                     CurrentFrame.mvpMapPoints[bestIdx2]=pMP;
@@ -1443,7 +1446,7 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, const Frame &LastFrame, 
             }
         }
     }
-
+	//cout << "ORBmatcher::SearchByProjection nmatches:" << nmatches << endl;
     //Apply rotation consistency
     if(mbCheckOrientation)
     {

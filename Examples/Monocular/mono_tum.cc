@@ -57,7 +57,8 @@ int main(int argc, char **argv)
     int nImages = vstrImageFilenames.size();
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR, true, mapfile);
-    SLAM.ActivateLocalizationMode();
+    if(mapfile != NULL)
+		SLAM.ActivateLocalizationMode();
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
     vTimesTrack.resize(nImages);
@@ -73,7 +74,7 @@ int main(int argc, char **argv)
         // Read image from file
 	
         im = cv::imread(string(argv[3])+"/"+vstrImageFilenames[ni],CV_LOAD_IMAGE_UNCHANGED);
-        double tframe = vTimestamps[ni];// + 3000000000;
+        double tframe = vTimestamps[ni] + 3000000000;
 	cout << "picture:" << vstrImageFilenames[ni] << " stamps:" << tframe << endl;
         if(im.empty())
         {
@@ -118,7 +119,7 @@ int main(int argc, char **argv)
 	cout << "...." << T-ttrack << endl;
         if(ttrack<T)
             usleep((T-ttrack)*1e6);
-		usleep(1e6);
+		//usleep(1e6);
 	cout << "....." << endl;
     }
     cout << "shutingdown" << endl;
@@ -139,8 +140,8 @@ int main(int argc, char **argv)
 
     // Save camera trajectory
     SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
-    if(mapfile == NULL)
-	SLAM.SaveMap("map.txt");    
+   	//if(mapfile == NULL)
+		//SLAM.SaveMap("map.txt");    
     return 0;
 }
 

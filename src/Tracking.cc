@@ -332,6 +332,7 @@ void Tracking::Track()
             if(mState==LOST)
             {
                 bOK = Relocalization();
+				mLastFrame.mTcw.release();
 				cout << "Tracking::Track 6 ..." << endl;
             }
             else
@@ -417,8 +418,10 @@ void Tracking::Track()
             // mbVO true means that there are few matches to MapPoints in the map. We cannot retrieve
             // a local map and therefore we do not perform TrackLocalMap(). Once the system relocalizes
             // the camera we will use the local map again.
+			cout << "Tracking::Track 111 bOK:" << bOK << " mbVO:" << mbVO << endl;
             if(bOK && !mbVO)
                 bOK = TrackLocalMap();
+			cout << "Tracking::Track 1111 bOK:" << bOK << " mbVO:" << mbVO << endl;
         }
 
         if(bOK)
@@ -432,7 +435,7 @@ void Tracking::Track()
         // If tracking were good, check if we insert a keyframe
         if(bOK)
         {
-			cout << "Tracking::Track 13" << endl;
+			cout << "Tracking::Track 13 mLastFrame.mTcw:" << mLastFrame.mTcw.size() << endl;
             // Update motion model
             if(!mLastFrame.mTcw.empty())
             {
@@ -443,7 +446,7 @@ void Tracking::Track()
             }
             else
                 mVelocity = cv::Mat();
-
+			cout << "Tracking::Track 1133 mVelocity:" << mVelocity << endl;
             mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.mTcw);
 
             // Clean VO matches
@@ -916,7 +919,7 @@ bool Tracking::TrackWithMotionModel()
 
     // Update last frame pose according to its reference keyframe
     // Create "visual odometry" points if in Localization Mode
-	cout << "Tracking::TrackWithMotionModel mLastFrame.mTcw:" << mLastFrame.mTcw << endl;
+	cout << "Tracking::TrackWithMotionModel mVelocity:" << mVelocity << " mLastFrame.mTcw:" << mLastFrame.mTcw << endl;
     UpdateLastFrame();
 
     mCurrentFrame.SetPose(mVelocity*mLastFrame.mTcw);
